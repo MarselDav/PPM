@@ -125,15 +125,15 @@ def decode(bytes, alph_freq_lst: list, len_str: int) -> str:
 
     alph_indexes = [i for i in range(len(alph_freq_lst))]
     alphabet_dict = dict(zip(alphabet_list, alph_indexes))
-    print(alph_freq_lst)
-    print(TOTAL_CUM)
-    print(cum_list)
+    # print(alph_freq_lst)
+    # print(TOTAL_CUM)
+    # print(cum_list)
 
     bitlen = 2 + math.ceil(math.log2(TOTAL_CUM))
     max_len = 2 ** bitlen
 
     alh_reverse_dict = {value: key for key, value in alphabet_dict.items()}
-    print("alh_reverse_dict", alh_reverse_dict)
+    # print("alh_reverse_dict", alh_reverse_dict)
     left = 0
     right = max_len - 1
 
@@ -214,7 +214,8 @@ def decode_file(in_filename_format, out_filename_format):
 
 
 if __name__ == '__main__':
-    code_file = 'test.txt'
+    # code_file = 'test.txt'
+    code_file = "war_and_peace.ru.txt"
     com_file = "compressed.txt"
     decom_file = "decompressed.txt"
 

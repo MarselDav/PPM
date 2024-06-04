@@ -2,12 +2,12 @@ class PPM:
     def __init__(self, order):
         self.order = order
         self.symbols_cnt = 0 # число символов
-        # self.escape = chr(257) + "ESC" + chr(257)
-        self.escape = b'\xc4\x81'
+        self.escape = b'\xff\xff'
         self.contexts = {}
 
     def init_minus_one_context(self, symbols_set):
         self.contexts[-1] = { symbol : 1  for symbol in symbols_set}
+        self.contexts[-1] = dict(sorted(self.contexts[-1].items()))
 
     @staticmethod
     def get_diffrent_symbols_cnt(data, data_len):
@@ -32,6 +32,8 @@ class PPM:
                 self.contexts[context][self.escape] = 0
             self.contexts[context][self.escape] += 1
 
+            self.contexts[context] = dict(sorted(self.contexts[context].items()))
+
         self.contexts[context][symbol] += 1
 
     def update_model(self, context, symbol):
@@ -43,8 +45,10 @@ class PPM:
     def get_cum_freq_under(context_dict, symbol):
         cum_freq_under = 0
         for s in context_dict.keys():
-            if s < symbol:
-                cum_freq_under += context_dict[s]
+            if s == symbol:
+                break
+
+            cum_freq_under += context_dict[s]
 
         return cum_freq_under
 

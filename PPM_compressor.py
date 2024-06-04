@@ -46,12 +46,12 @@ class PPM_compressor(PPM):
                 file_writer.write(b'0')
 
                 self.init_minus_one_context(symbols_set)
-
                 context = b""
                 for i in range(data_len):
                     symbol = file_data[i:i+1]
                     self.encode_symbol(context, symbol)
                     self.update_model(context, symbol)
+                    # print(self.contexts)
                     context = (context + symbol)[-self.order:]
 
                 bit_str = self.ac_compressor.end_encode()

@@ -27,12 +27,11 @@ class ArithmeticCodingDecompress(ArithmeticCoding):
         self.curr_symbol_ind = self.bitlen
 
 
-    def decode_symbol(self, freq_dict: dict) -> str:
+    def decode_symbol(self, freq_dict_sorted: dict) -> str:
         cum_sum = 0
         cum_list = [0]
         TOTAL_CUM = 0  # !total cumulitive frequency
 
-        freq_dict_sorted = {key : freq_dict[key] for key in sorted(freq_dict.keys())}
 
         for key in freq_dict_sorted.keys():
             cum_sum += freq_dict_sorted[key]
