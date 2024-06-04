@@ -18,7 +18,9 @@ class ArithmeticCodingDecompress(ArithmeticCoding):
             for k in range(0, 8):
                 bit_stream_str.append(bit_symbol[k])
 
-        bit_stream_str = "".join(bit_stream_str)[:-bit_cnt_added_to_last_byte:]
+        bit_stream_str = "".join(bit_stream_str)
+        if bit_cnt_added_to_last_byte != 0:
+            bit_stream_str = bit_stream_str[: -bit_cnt_added_to_last_byte:]
 
         self.bit_stream_str = bit_stream_str
 
@@ -31,7 +33,6 @@ class ArithmeticCodingDecompress(ArithmeticCoding):
         cum_sum = 0
         cum_list = [0]
         TOTAL_CUM = 0  # !total cumulitive frequency
-
 
         for key in freq_dict_sorted.keys():
             cum_sum += freq_dict_sorted[key]
