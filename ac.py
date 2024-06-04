@@ -231,5 +231,5 @@ if __name__ == '__main__':
     with open(decom_file, 'r', encoding='utf-8', newline='\x0A') as file2:
         str2 = file2.read()
 
-    # print(len(compressed))
+    print(len(compressed))
     print(str1 == str2)

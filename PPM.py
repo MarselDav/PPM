@@ -2,18 +2,20 @@ class PPM:
     def __init__(self, order):
         self.order = order
         self.symbols_cnt = 0 # число символов
-        self.escape = chr(257) + "ESC" + chr(257)
+        # self.escape = chr(257) + "ESC" + chr(257)
+        self.escape = b'\xc4\x81'
         self.contexts = {}
 
-    def init_context(self, symbols_set):
+    def init_minus_one_context(self, symbols_set):
         self.contexts[-1] = { symbol : 1  for symbol in symbols_set}
 
     @staticmethod
-    def get_diffrent_symbols_cnt(data):
+    def get_diffrent_symbols_cnt(data, data_len):
         symbols_set = set()
         diffrent_symbols_cnt = 0
 
-        for symbol in data:
+        for i in range(data_len):
+            symbol = data[i:i+1]
             if symbol not in symbols_set:
                 diffrent_symbols_cnt += 1
                 symbols_set.add(symbol)
@@ -25,7 +27,7 @@ class PPM:
         if symbol not in self.contexts[context]:
             self.contexts[context][symbol] = 0
 
-            # Обновляем максимально ебучий esc символ, который меня уже заебал
+            # Обновляем esc символ
             if self.escape not in self.contexts[context]:
                 self.contexts[context][self.escape] = 0
             self.contexts[context][self.escape] += 1
@@ -49,19 +51,14 @@ class PPM:
 
     def get_probability(self, context, symbol):
         if context in self.contexts:
-            # esc = len(self.contexts[context])
             total_symbols = sum(self.contexts[context].values())  - self.contexts[context][self.escape]
             if symbol in self.contexts[context]:
                 cum_freq_under = self.get_cum_freq_under(self.contexts[context], symbol)
                 # p(symbol) = c(s) / (c + d)
-                # return cum_freq_under, self.contexts[context][symbol], total_symbols + esc
                 return symbol, cum_freq_under, self.contexts[context][symbol], total_symbols + self.contexts[context][self.escape]
 
             else: # такого символа нет в контексе, возвращаем esc
                 # p(esc) = d / (d + c)
-                # print(f"symbol: {self.escape} :", total_symbols, esc, total_symbols + esc)
-                # return total_symbols, esc, total_symbols + esc
-                # print(f"symbol: {self.escape} :", total_symbols, self.contexts[context][self.escape], total_symbols + self.contexts[context][self.escape])
                 return self.escape, total_symbols, self.contexts[context][self.escape], total_symbols + self.contexts[context][self.escape]
 
         return 0, 0, 0, 0 # потому что до этого такого контекста ещё не было, поэтому мы даже не возвращаем esc символ

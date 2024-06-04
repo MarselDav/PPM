@@ -1,5 +1,6 @@
 from PPM import PPM
 from ArithmeticCodingDecompress import ArithmeticCodingDecompress
+import pickle
 
 class PPM_decompressor(PPM):
     def __init__(self, order):
@@ -20,26 +21,25 @@ class PPM_decompressor(PPM):
         return decode_symbol
 
 
-    def decode_data(self, encoded_data, diffrent_symbols, original_data_len):
-        self.ac_decompressor = ArithmeticCodingDecompress(original_data_len)
-        self.ac_decompressor.init_decoding(encoded_data)
-        self.init_context(diffrent_symbols)
-        decode_data = ""
-        context = ""
-        # print(self.contexts)
-        while len(decode_data) != original_data_len:
-            decode_symbol = self.decode_symbol(context)
-            decode_data += decode_symbol
-            self.update_model(context, decode_symbol)
-            # print(self.contexts)
-            context = (context + decode_symbol)[-self.order:]
+    def decode_data(self, orig_data_len, file_input, file_output):
+        with open(file_input, "rb") as file_reader:
+            diffrent_symbols = pickle.load(file_reader)
+            file_reader.readline()
+            bit_cnt_added_to_last_byte = int.from_bytes(file_reader.read(1), byteorder="big")
+            encoded_data = file_reader.read()
 
-        return decode_data
+            self.ac_decompressor = ArithmeticCodingDecompress(orig_data_len)
+            self.ac_decompressor.init_decoding(encoded_data, bit_cnt_added_to_last_byte)
 
+            self.init_minus_one_context(diffrent_symbols)
+            decode_data = bytearray()
+            context = b""
 
-if __name__ == "__main__":
-    # data = "alomohora-ahoromola-arohomola-alohomor"
-    # data = "abracadabra"
-    # data = "Run-length Encoding is a simple yet effective form of lossless data compression. The basic idea behind RLE is to represent consecutive identical elements, called a “run” in a data stream by a single value and its count rather than as the original run. This is particularly useful when dealing with repetitive sequences, as it significantly reduces the amount of space needed to store or transmit the data."
-    ppm = PPM_decompressor(4)
-    # ppm.encode_data(data)
+            while len(decode_data) != orig_data_len:
+                decode_symbol = self.decode_symbol(context)
+                decode_data += decode_symbol
+                self.update_model(context, decode_symbol)
+                context = (context + decode_symbol)[-self.order:]
+
+        with open(file_output, "wb") as file_writer:
+            file_writer.write(decode_data)

@@ -10,27 +10,22 @@ class ArithmeticCodingDecompress(ArithmeticCoding):
         self.TAG = 0
         self.curr_symbol_ind = 0
 
-    # def init_decoding(self, bytes):
-    #     self.bit_stream_str = []
-    #     for symbol_ind in range(len(bytes)):
-    #         symbol = bytes[symbol_ind]
-    #         bit_symbol = bin(symbol)[2:].zfill(8)
-    #         for k in range(0, 8):
-    #             self.bit_stream_str.append(bit_symbol[k])
-    #
-    #     self.bit_stream_str = "".join(self.bit_stream_str)
-    #
-    #     self.TAG = int(self.bit_stream_str[:self.bitlen], 2)
-    #
-    #     self.curr_symbol_ind = self.bitlen
+    def init_decoding(self, compressed_data, bit_cnt_added_to_last_byte):
+        bit_stream_str = []
+        for symbol_ind in range(len(compressed_data)):
+            symbol = compressed_data[symbol_ind]
+            bit_symbol = bin(symbol)[2:].zfill(8)
+            for k in range(0, 8):
+                bit_stream_str.append(bit_symbol[k])
 
+        bit_stream_str = "".join(bit_stream_str)[:-bit_cnt_added_to_last_byte:]
 
-    def init_decoding(self, bit_stream_str):
         self.bit_stream_str = bit_stream_str
 
         self.TAG = int(self.bit_stream_str[:self.bitlen], 2)
 
         self.curr_symbol_ind = self.bitlen
+
 
     def decode_symbol(self, freq_dict: dict) -> str:
         cum_sum = 0
@@ -91,15 +86,3 @@ class ArithmeticCodingDecompress(ArithmeticCoding):
 
         return decoded_symbol
 
-
-if __name__ == '__main__':
-    code_file = 'test.txt'
-    com_file = "compressed.txt"
-    decom_file = "decompressed.txt"
-
-    ac = ArithmeticCoding(100)
-    # ac.encode_symbol(3, 20, 80)
-    # ac.encode_symbol(2, 23, 80)
-    # ac.encode_symbol(3, 25, 80)
-    # ac.encode_symbol(1, 28, 80)
-    # ac.end_encode()
