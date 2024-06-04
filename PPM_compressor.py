@@ -5,8 +5,8 @@ from ArithmeticCodingCompress import  ArithmeticCodingCompress
 from BitsBuffer import BitsBuffer
 
 class PPM_compressor(PPM):
-    def __init__(self, order, is_equally_probable=True, exclusion=False, update_exclusion=False):
-        super().__init__(order, is_equally_probable, exclusion, update_exclusion)  # Вызов конструктора базового класса
+    def __init__(self, order, exclusion=False, update_exclusion=False):
+        super().__init__(order, exclusion, update_exclusion)  # Вызов конструктора базового класса
         self.ac_compressor = None
 
     def encode_symbol(self, context, symbol):
@@ -30,7 +30,7 @@ class PPM_compressor(PPM):
         cum_freq_under = self.get_cum_freq_under(self.contexts[-1], symbol) # это порядок -1, возвращаем, считая что все символы равновероятные
 
         # print(f"symbol: {symbol} :", cum_freq_under, self.contexts[-1][symbol], self.symbols_cnt)
-        self.ac_compressor.encode_symbol(cum_freq_under / self.symbols_cnt, (cum_freq_under + self.contexts[-1][symbol]) / self.symbols_cnt)
+        self.ac_compressor.encode_symbol(cum_freq_under / self.total_sum_minus_1_order, (cum_freq_under + self.contexts[-1][symbol]) / self.total_sum_minus_1_order)
         return -1
 
 
@@ -44,14 +44,14 @@ class PPM_compressor(PPM):
                 bits_buffer.set_file_writer(file_writer)
 
                 self.ac_compressor = ArithmeticCodingCompress(bits_buffer, data_len)
-                self.symbols_cnt, symbols_set  = self.get_diffrent_symbols_cnt(file_data, data_len)
 
+                self.total_sum_minus_1_order, symbols_set = self.get_diffrent_symbols_cnt(file_data, data_len)
                 pickle.dump(symbols_set, file_writer)
+                self.init_minus_one_context_equally(symbols_set)
                 file_writer.write(b'\n')
                 end_dict_pos = file_writer.tell()
                 file_writer.write(b'0')
 
-                self.init_minus_one_context(symbols_set)
                 context = b""
                 for i in range(data_len):
                     symbol = file_data[i:i+1]

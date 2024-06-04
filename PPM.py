@@ -1,7 +1,7 @@
 class PPM:
-    def __init__(self, order, is_equally_probable=True, exclusion=False, update_exclusion=False):
+    def __init__(self, order, exclusion=False, update_exclusion=False):
         self.order = order
-        self.symbols_cnt = 0  # число символов
+        self.total_sum_minus_1_order = 0  # число символов
         self.escape = b'\xff\xff'
         self.contexts = {}
 
@@ -9,7 +9,7 @@ class PPM:
         self.update_exclusion = update_exclusion
         self.exclusion = exclusion
 
-    def init_minus_one_context(self, symbols_set):
+    def init_minus_one_context_equally(self, symbols_set):
         self.contexts[-1] = {symbol: 1 for symbol in symbols_set}
         self.contexts[-1] = dict(sorted(self.contexts[-1].items()))
 

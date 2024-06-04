@@ -3,9 +3,9 @@ from ArithmeticCodingDecompress import ArithmeticCodingDecompress
 import pickle
 
 class PPM_decompressor(PPM):
-    def __init__(self, order, is_equally_probable=True, exclusion=False, update_exclusion=False):
-        super().__init__(order, is_equally_probable, exclusion, update_exclusion)  # Вызов конструктора базового класса
-        self.ac_compressor = None
+    def __init__(self, order,  exclusion=False, update_exclusion=False):
+        super().__init__(order, exclusion, update_exclusion)  # Вызов конструктора базового класса
+        self.ac_decompressor = None
 
 
     def decode_symbol(self, context):
@@ -45,7 +45,8 @@ class PPM_decompressor(PPM):
             self.ac_decompressor = ArithmeticCodingDecompress(orig_data_len)
             self.ac_decompressor.init_decoding(encoded_data, bit_cnt_added_to_last_byte)
 
-            self.init_minus_one_context(diffrent_symbols)
+            self.init_minus_one_context_equally(diffrent_symbols)
+
             decode_data = bytearray()
             context = b""
 
